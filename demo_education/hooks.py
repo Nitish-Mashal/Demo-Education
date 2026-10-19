@@ -74,20 +74,14 @@ app_license = "mit"
 # 	"Role": "home_page"
 # }
 
+# Guests see the Vue landing page (`www/index.html`, built from `frontend/`)
+# at the site root `/`. Logged-in users are unaffected: with no home page
+# resolved for them, Frappe falls through to Role / Portal Settings / `me`
+# as usual. No redirect to the assets bundle — the browser stays on `/`.
+get_website_user_home_page = ["demo_education.website.get_website_user_home_page"]
+
 # Website
 # ----------
-# The Vue landing page (`frontend/`) is built with `yarn build` into
-# `demo_education/public/frontend`, which Frappe serves at
-# `/assets/demo_education/frontend/index.html`. Redirect the site root to
-# that bundle so the public landing page is what guests see first.
-# The custom login page stays untouched at `/login`.
-website_redirects = [
-	{
-		"source": "/",
-		"target": "/assets/demo_education/frontend/index.html",
-		"redirect_http_status": 302,
-	},
-]
 
 # Generators
 # ----------

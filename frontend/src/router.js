@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
@@ -9,14 +9,10 @@ const routes = [
 ]
 
 let router = createRouter({
-  // `yarn dev` uses HTML5 history so the root page is `/` instead of `/#/`.
-  // Hash history is kept for the production bundle so it stays servable
-  // straight from Frappe's assets directory
-  // (`/assets/demo_education/frontend/index.html`) without needing any
-  // server-side rewrite rules, so the landing page works on local and
-  // deployed sites alike. `import.meta.env.DEV` is inlined as `false` at
-  // build time, so `yarn build` output is unchanged.
-  history: import.meta.env.DEV ? createWebHistory() : createWebHashHistory(),
+  // HTML5 history in both dev and production. In production the bundle is
+  // served by Frappe at the site root via `www/index.html`, so the browser
+  // stays on `/` — no hash routes, no assets URL in the address bar.
+  history: createWebHistory(),
   routes,
   scrollBehavior(to) {
     if (to.hash) {
