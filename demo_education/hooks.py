@@ -74,6 +74,21 @@ app_license = "mit"
 # 	"Role": "home_page"
 # }
 
+# Website
+# ----------
+# The Vue landing page (`frontend/`) is built with `yarn build` into
+# `demo_education/public/frontend`, which Frappe serves at
+# `/assets/demo_education/frontend/index.html`. Redirect the site root to
+# that bundle so the public landing page is what guests see first.
+# The custom login page stays untouched at `/login`.
+website_redirects = [
+	{
+		"source": "/",
+		"target": "/assets/demo_education/frontend/index.html",
+		"redirect_http_status": 302,
+	},
+]
+
 # Generators
 # ----------
 
