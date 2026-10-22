@@ -70,9 +70,6 @@ function onNavClick(event, target) {
           &copy; {{ year }} Quantumberg Tech Pvt Ltd &middot; Demo Education
           Portal. All rights reserved.
         </p>
-        <p class="text-body-sm text-white/40">
-          Built on Frappe &amp; ERPNext Education
-        </p>
       </div>
     </div>
   </footer>

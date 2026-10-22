@@ -592,7 +592,8 @@ main.container{
 
         <div class="brand-block">
 
-            <div class="brand-logo{% if not company_logo %} logo-fallback{% endif %}">
+            <a href="/" aria-label="{{ _('Go to homepage') }}"
+                class="brand-logo{% if not company_logo %} logo-fallback{% endif %}">
                 {% if company_logo %}
                 <img src="{{ company_logo }}" alt="{{ company_name or _('Website') }} logo"
                     onerror="this.closest('.brand-logo').classList.add('logo-fallback'); this.remove();">
@@ -608,7 +609,7 @@ main.container{
                     </svg>
                     {%- endif -%}
                 </span>
-            </div>
+            </a>
 
             <h1>{% if company_name %}{{ _("Login to {0}").format(company_name) }}{% else %}{{ _("Login") }}{% endif %}</h1>
 
@@ -756,8 +757,90 @@ main.container{
         student: { usr: "demostd@gmail.com", pwd: "Demostudent@123" }
     };
 
+    // Server side, the login response carries `home_page`, which Frappe
+    // resolves through Role / Portal Settings / app hooks. On this site the
+    // demo admin also holds the Student and Guardian roles, so `education`'s
+    // role_home_page hook resolves `home_page` to `edu-portal` and the stock
+    // handler in templates/includes/login/login.js sends that account to the
+    // Student Portal. The destination for the Admin demo account is therefore
+    // decided here, from the account that actually authenticated, once the
+    // login response confirms the sign-in.
+    var ADMIN_DESTINATION = "/desk";
+    // var PORTAL_PREFIXES = ["/edu-portal", "/student-portal"];
+
+    // Demo role of the sign-in attempt in flight: set from the quick-login
+    // button (data-role) or from the username typed into the form, read only
+    // after Frappe reports a successful login, cleared once it is used.
+    var pendingRole = null;
+
     var busy = false;
     var safetyTimer = null;
+
+    function roleForUsername(usr) {
+        for (var role in DEMO_ACCOUNTS) {
+            if (DEMO_ACCOUNTS[role].usr === usr) {
+                return role;
+            }
+        }
+        return null;
+    }
+
+    function requestedRedirect() {
+        var raw = "";
+        try {
+            raw = frappe.utils.get_url_arg("redirect-to") || "";
+            if (raw && frappe.utils.sanitise_redirect) {
+                raw = frappe.utils.sanitise_redirect(raw);
+            }
+        } catch (err) {
+            return "";
+        }
+        return raw;
+    }
+
+    function isPortalPath(path) {
+        path = String(path || "");
+        for (var i = 0; i < PORTAL_PREFIXES.length; i++) {
+            var prefix = PORTAL_PREFIXES[i];
+            if (path === prefix ||
+                path.indexOf(prefix + "/") === 0 ||
+                path.indexOf(prefix + "?") === 0 ||
+                path.indexOf(prefix + "#") === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Wrap Frappe's post-login handler: every other account keeps the stock
+    // behaviour (`?redirect-to=` first, then the server's `home_page`), while
+    // the Admin demo account lands on the desk unless it was explicitly sent
+    // somewhere legitimate (anything but the portal or the login page itself).
+    var stockLogin200 = login.login_handlers[200];
+
+    login.login_handlers[200] = function (data) {
+        var role = pendingRole;
+
+        if (data && data.message === "Logged In") {
+            pendingRole = null;
+
+            if (role === "admin") {
+                var requested = requestedRedirect();
+                var destination = requested &&
+                    !isPortalPath(requested) &&
+                    !/^\/?login\/?$/.test(String(requested).replace(/^\//, ""))
+                    ? requested
+                    : ADMIN_DESTINATION;
+
+                login.set_status({{ _("Success") | tojson }}, "green");
+                document.body.innerHTML = `{% include "templates/includes/splash_screen.html" %}`;
+                window.location.href = destination;
+                return;
+            }
+        }
+
+        return stockLogin200(data);
+    };
 
     function setBusy(state) {
         busy = state;
@@ -795,6 +878,8 @@ main.container{
     $("form.form-login").on("submit.edu_guard", function (event) {
         var usr = ($("#login_email").val() || "").trim();
         var pwd = $("#login_password").val() || "";
+
+        pendingRole = roleForUsername(usr);
 
         if (!usr || !pwd) {
             return;
@@ -861,6 +946,7 @@ main.container{
         // (same endpoint, CSRF handling and session flow as the Sign in
         // form). The visible username/password fields are never filled.
         try {
+            pendingRole = role;
             login.call(
                 { cmd: "login", usr: account.usr, pwd: account.pwd },
                 null,
