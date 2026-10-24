@@ -42,7 +42,7 @@ const features = [
 </script>
 
 <template>
-  <section id="features" class="scroll-mt-24 bg-white py-20 lg:py-28">
+  <section id="features" class="scroll-mt-24 bg-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-3xl text-center">
         <p class="text-body-sm font-bold uppercase tracking-[0.18em] text-edu-purple">

@@ -11,7 +11,6 @@ const mobileOpen = ref(false)
 
 const navLinks = [
   { label: 'Home', target: 'home' },
-  { label: 'About', target: 'about' },
   { label: 'Features', target: 'features' },
   { label: 'Benefits', target: 'benefits' },
 ]
