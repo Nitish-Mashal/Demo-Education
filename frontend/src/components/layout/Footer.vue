@@ -13,7 +13,6 @@ const platformLinks = [
   { label: 'Home', target: 'home' },
   { label: 'Features', target: 'features' },
   { label: 'Benefits', target: 'benefits' },
-  { label: 'About', target: 'about' },
 ]
 
 function onNavClick(event, target) {

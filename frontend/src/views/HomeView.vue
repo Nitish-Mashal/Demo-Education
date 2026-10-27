@@ -4,7 +4,7 @@ import Footer from '@/components/layout/Footer.vue'
 import HeroSection from '@/components/landing/HeroSection.vue'
 import FeaturesSection from '@/components/landing/FeaturesSection.vue'
 import BenefitsSection from '@/components/landing/BenefitsSection.vue'
-import RolesSection from '@/components/landing/RolesSection.vue'
+// import RolesSection from '@/components/landing/RolesSection.vue'
 import CallToAction from '@/components/landing/CallToAction.vue'
 </script>
 
