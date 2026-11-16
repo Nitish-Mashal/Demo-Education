@@ -5,6 +5,17 @@ app_description = "Education for the demo to the clients"
 app_email = "nitish.m@quantumberg.com"
 app_license = "mit"
 
+fixtures = [
+    {
+        "dt": "Property Setter",
+        "filters": [
+            ["doc_type", "in", ["Student Applicant", "Course Enrollment"]],
+            ["property", "=", "label"]
+        ]
+    }
+]
+
+
 # Apps
 # ------------------
 
